@@ -23,7 +23,7 @@ export class Phonebook extends React.Component {
     
     dataHandleSubmit = data => {
         if (this.isDuplicate(data)) {
-            console.log(this.isDuplicate(data));
+            // console.log(this.isDuplicate(data));
             return Notiflix.Notify.failure(`Sorry but contact ${data.name} with number ${data.number} is added to your phonebook `);
         }
 
@@ -54,8 +54,28 @@ export class Phonebook extends React.Component {
     isDuplicate = ({ name, number }) => {
         const {contacts} = this.state;
         const rezult = contacts.find(item => item.name.toLowerCase() === name.toLowerCase() && item.number.replace(/[^0-9]+/g, '') === number.replace(/[^0-9]+/g, ''));
-        console.log(rezult);
+        // console.log(rezult);
         return rezult;
+    }
+    componentDidMount() {
+        
+        const contactsLocalStorage = JSON.parse(localStorage.getItem('contacts'));
+        console.log(contactsLocalStorage);
+        this.setState({contacts: contactsLocalStorage})
+
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+
+        if (this.state.contacts !== this.state.prevState) {
+            localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+            console.log('no iqual')
+        }
+        console.log('prevprops',prevProps);
+        console.log('prevstate',prevState);
+        console.log('this state',this.state);
+
+        
     }
 
     render() {
