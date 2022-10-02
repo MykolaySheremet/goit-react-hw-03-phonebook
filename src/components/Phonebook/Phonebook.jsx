@@ -22,8 +22,21 @@ export class Phonebook extends React.Component {
 
     
     dataHandleSubmit = data => {
+    
         if (this.isDuplicate(data)) {
-            return Notiflix.Notify.failure(`Sorry but contact ${data.name} with number ${data.number} is added to your phonebook `);
+
+            if (this.isDuplicateName(data) && this.isDuplicateNumber(data)) {
+                return Notiflix.Notify.failure(`Sorry but contact ${data.name} with number ${data.number} is added to your phonebook `)
+            }
+
+            if (this.isDuplicateName(data)) {
+                return Notiflix.Notify.failure(`Sorry, but you has already added ${data.name} to your Phonebook, give a different name to this contact`);
+            }
+
+            if (this.isDuplicateNumber(data)) {
+                return Notiflix.Notify.failure(`Sorry, but you has already added such ${data.number} to your Phonebook`);
+            }
+
         }
 
         const newContact = {
@@ -51,11 +64,33 @@ export class Phonebook extends React.Component {
     }
     
     isDuplicate = ({ name, number }) => {
-        const {contacts} = this.state;
-        const rezult = contacts.find(item => item.name.toLowerCase() === name.toLowerCase() && item.number.replace(/[^0-9]+/g, '') === number.replace(/[^0-9]+/g, ''));
-       
-        return rezult;
+        const { contacts } = this.state;
+        const rezult = contacts.find(item => item.name.toLowerCase() === name.toLowerCase() || item.number.replace(/[^0-9]+/g, '') === number.replace(/[^0-9]+/g, ''));
+        
+      return rezult;       
+
     }
+
+    isDuplicateName = ({ name}) => {
+        const { contacts } = this.state;
+        const rezultCheckName = contacts.find(item => item.name.toLowerCase() === name.toLowerCase());
+        
+      return rezultCheckName;       
+
+    }
+
+    isDuplicateNumber = ({number}) => {
+        const { contacts } = this.state;
+        const rezultCheckNumber = contacts.find(item => item.number.replace(/[^0-9]+/g, '') === number.replace(/[^0-9]+/g, ''));
+
+      return rezultCheckNumber;       
+
+    }
+
+
+
+
+
     componentDidMount() {
         
         const contactsLocalStorage = JSON.parse(localStorage.getItem('contacts'));
@@ -70,7 +105,14 @@ export class Phonebook extends React.Component {
 
     componentDidUpdate(prevProps, prevState) {
 
-        if (this.state.contacts !== this.state.prevState) {
+
+
+        // console.log(this.state.contacts);
+        // console.log(prevState.contacts);
+
+
+        if (this.state.contacts !== prevState.contacts) {
+
             localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
             
         }
